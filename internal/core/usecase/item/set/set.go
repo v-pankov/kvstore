@@ -23,14 +23,18 @@ type Processor struct {
 }
 
 func (p Processor) Process(ctx context.Context, req *Request) (*Response, error) {
-	if err := p.Gateways.CreateOrUpdateItem(ctx, req.Key, req.Val); err != nil {
+	if err := p.Gateways.Repository.CreateOrUpdateItem(ctx, req.Key, req.Val); err != nil {
 		return nil, fmt.Errorf("create or update item: %w", err)
 	}
 
 	return &Response{}, nil
 }
 
-type Gateways interface {
+type Gateways struct {
+	Repository Repository
+}
+
+type Repository interface {
 	CreateOrUpdateItem(ctx context.Context, key itemEntity.Key, val itemEntity.Val) error
 }
 

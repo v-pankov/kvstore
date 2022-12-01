@@ -27,7 +27,7 @@ type Processor struct {
 }
 
 func (p Processor) Process(ctx context.Context, req *Request) (*Response, error) {
-	item, err := p.Gateways.FindItemByKey(ctx, req.Key)
+	item, err := p.Gateways.Repository.FindItemByKey(ctx, req.Key)
 	if err != nil {
 		return nil, fmt.Errorf("find item by key: %w", err)
 	}
@@ -40,7 +40,11 @@ func (p Processor) Process(ctx context.Context, req *Request) (*Response, error)
 	}, nil
 }
 
-type Gateways interface {
+type Gateways struct {
+	Repository Repository
+}
+
+type Repository interface {
 	FindItemByKey(ctx context.Context, key itemEntity.Key) (*itemEntity.Entity, error)
 }
 

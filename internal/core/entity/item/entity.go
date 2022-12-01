@@ -18,6 +18,10 @@ type (
 	Val []byte
 )
 
+func (k Key) EqualsTo(thatKey Key) bool {
+	return bytes.Equal(k, thatKey)
+}
+
 type ErrKeyLength struct {
 	Max int
 	Got int
