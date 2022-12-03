@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option go_package = "generated/api/grpc";
+
+service KVStore {
+    rpc Delete (DeleteRequest) returns (DeleteReply) {}
+    rpc Get    (GetRequest)    returns (GetReply)    {}
+    rpc Set    (SetRequest)    returns (SetReply)    {}
+}
+
+message DeleteRequest {
+    bytes key = 1;
+}
+
+message DeleteReply {
+    int32  status  = 1;
+    string message = 2;
+}
+
+message GetRequest {
+    bytes key = 1;
+}
+
+message GetReply {
+    bytes  val     = 1;
+    int32  status  = 2;
+    string message = 3;
+}
+
+message SetRequest {
+    bytes key = 1; 
+    bytes val = 2;
+}
+
+message SetReply {
+    int32  status  = 1;
+    string message = 2;
+}
