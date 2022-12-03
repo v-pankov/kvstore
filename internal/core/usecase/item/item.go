@@ -8,24 +8,6 @@ import (
 	"github.com/vdrpkv/kvstore/internal/core/usecase"
 )
 
-// KeyValidatingInteractor is a decorator for Interactor interface.
-// KeyValidatingInteractor validates items key from request and then
-// calls actual Interactor on success.
-type KeyValidatingInteractor[RequestModel KeyValidatingRequest] struct {
-	KeyValidator    item.KeyValidator
-	InnerInteractor usecase.Interactor[RequestModel]
-}
-
-func (p KeyValidatingInteractor[RequestModel]) Process(
-	ctx context.Context, req RequestModel,
-) error {
-	if err := req.ItemKey().Validate(p.KeyValidator); err != nil {
-		return fmt.Errorf("validate item key: %w", err)
-	}
-
-	return p.InnerInteractor.Interact(ctx, req)
-}
-
 // KeyValidatingProcessor is a decorator for Processor interface.
 // KeyValidatingProcessor validates items and then calls actual Processor.
 type KeyValidatingProcessor[RequestModel KeyValidatingRequest, ResponseModel any] struct {
