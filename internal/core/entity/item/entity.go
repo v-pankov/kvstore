@@ -60,8 +60,27 @@ func (k Key) Validate(v KeyValidator) error {
 			Char:     rune(k[forbiddenCharIndex]),
 			Position: forbiddenCharIndex,
 		}
-
 	}
 
 	return nil
+}
+
+type keyValidator struct {
+	keyMaxLen         int
+	keyForbiddenChars string
+}
+
+func (v keyValidator) KeyMaxLen() int {
+	return v.keyMaxLen
+}
+
+func (v keyValidator) KeyForbiddenChars() string {
+	return v.keyForbiddenChars
+}
+
+func NewKeyValidator(keyMaxLen int, forbiddenChars string) KeyValidator {
+	return keyValidator{
+		keyMaxLen:         keyMaxLen,
+		keyForbiddenChars: forbiddenChars,
+	}
 }
