@@ -11,8 +11,10 @@ import (
 	itemUsecase "github.com/vdrpkv/kvstore/internal/core/usecase/item"
 )
 
-type Request struct {
-	itemUsecase.BasicRequest
+type Request itemUsecase.BasicRequest
+
+func (r Request) ItemKey() itemEntity.Key {
+	return r.Key
 }
 
 type Response struct {
@@ -30,6 +32,11 @@ func (p Processor) Process(ctx context.Context, req *Request) (*Response, error)
 	item, err := p.Gateways.Repository.FindItemByKey(ctx, req.Key)
 	if err != nil {
 		return nil, fmt.Errorf("find item by key: %w", err)
+	}
+
+	// TODO: handle not-found case
+	if item == nil {
+		return &Response{}, nil
 	}
 
 	return &Response{
