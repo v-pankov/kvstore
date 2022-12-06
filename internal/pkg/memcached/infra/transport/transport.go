@@ -5,7 +5,7 @@ import (
 
 	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/command"
 	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/reply"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/service"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/transport"
 )
 
 type commandSender struct {
@@ -16,7 +16,7 @@ type commandSender struct {
 func NewCommandSender(
 	commandEncoder CommandEncoder,
 	commandWriter CommandWriter,
-) service.CommandSender {
+) transport.CommandSender {
 	return commandSender{
 		commandEncoder: commandEncoder,
 		commandWriter:  commandWriter,
@@ -44,7 +44,7 @@ type replyReceiver struct {
 func NewReplyReceiver(
 	replyReader ReplyReader,
 	replyDecoder ReplyDecoder,
-) service.ReplyReceiver {
+) transport.ReplyReceiver {
 	return replyReceiver{
 		replyReader:  replyReader,
 		replyDecoder: replyDecoder,
@@ -69,7 +69,7 @@ type dataBlockSender struct {
 	dataBlockWriter DataBlockWriter
 }
 
-func NewDataBlockSender(dataBlockWriter DataBlockWriter) service.DataBlockSender {
+func NewDataBlockSender(dataBlockWriter DataBlockWriter) transport.DataBlockSender {
 	return dataBlockSender{
 		dataBlockWriter: dataBlockWriter,
 	}
@@ -86,7 +86,7 @@ type dataBlockReceiver struct {
 	dataBlockReader DataBlockReader
 }
 
-func NewDataBlockReceiver(dataBlockReader DataBlockReader) service.DataBlockReceiver {
+func NewDataBlockReceiver(dataBlockReader DataBlockReader) transport.DataBlockReceiver {
 	return dataBlockReceiver{
 		dataBlockReader: dataBlockReader,
 	}

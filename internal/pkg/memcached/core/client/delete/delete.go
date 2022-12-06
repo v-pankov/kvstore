@@ -6,12 +6,12 @@ import (
 	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core"
 	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/command"
 	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/reply"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/service"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/transport"
 )
 
 type Transport struct {
-	CommandSender service.CommandSender
-	ReplyReceiver service.ReplyReceiver
+	CommandSender transport.CommandSender
+	ReplyReceiver transport.ReplyReceiver
 }
 
 type Args struct {
