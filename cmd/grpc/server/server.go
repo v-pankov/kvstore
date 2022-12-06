@@ -10,8 +10,10 @@ import (
 	grpcHandlerGet "github.com/vdrpkv/kvstore/internal/app/gateway/grpc/handler/get"
 	grpcHandlerSet "github.com/vdrpkv/kvstore/internal/app/gateway/grpc/handler/set"
 	grpcServer "github.com/vdrpkv/kvstore/internal/app/gateway/grpc/server"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcachedpool"
 
 	infraRepoInmem "github.com/vdrpkv/kvstore/internal/app/infra/repository/inmem"
+	infraRepoMemcached "github.com/vdrpkv/kvstore/internal/app/infra/repository/memcached"
 
 	itemEntity "github.com/vdrpkv/kvstore/internal/core/entity/item"
 	itemUsecase "github.com/vdrpkv/kvstore/internal/core/usecase/item"
@@ -26,10 +28,25 @@ func main() {
 }
 
 func DoMain() {
+
+	memcachedPool := memcachedpool.NewDynamicClientPool(
+		memcachedpool.TCPConnFactory{
+			IP:   net.IPv4(127, 0, 0, 1),
+			Port: 11211,
+		},
+		7,
+	)
+
 	var (
 		itemKeyValidator = itemEntity.NewKeyValidator(10, " \r\n\t")
-		inmemRepo        = infraRepoInmem.New()
-		grpcServer       = grpcServer.Server{
+
+		memcachedRepo = infraRepoMemcached.New(memcachedpool.MemcachedClient{ClientPool: memcachedPool})
+		inmemRepo     = infraRepoInmem.New()
+		_             = inmemRepo
+
+		repoAdapters = memcachedRepo
+
+		grpcServer = grpcServer.Server{
 			Handlers: grpcServer.Handlers{
 				Delete: grpcHandlerDelete.Handler{
 					Processor: itemUsecase.NewKeyValidationProcessor[
@@ -38,7 +55,7 @@ func DoMain() {
 					](
 						itemKeyValidator, usecaseItemDelete.Processor{
 							Gateways: usecaseItemDelete.Gateways{
-								Repository: inmemRepo.UseCaseItemDeleteAdapter(),
+								Repository: repoAdapters.UseCaseItemDeleteAdapter(),
 							},
 						},
 					),
@@ -50,7 +67,7 @@ func DoMain() {
 					](
 						itemKeyValidator, usecaseItemGet.Processor{
 							Gateways: usecaseItemGet.Gateways{
-								Repository: inmemRepo.UseCaseItemGetAdapter(),
+								Repository: repoAdapters.UseCaseItemGetAdapter(),
 							},
 						},
 					),
@@ -62,7 +79,7 @@ func DoMain() {
 					](
 						itemKeyValidator, usecaseItemSet.Processor{
 							Gateways: usecaseItemSet.Gateways{
-								Repository: inmemRepo.UseCaseItemSetAdapter(),
+								Repository: repoAdapters.UseCaseItemSetAdapter(),
 							},
 						},
 					),
