@@ -3,15 +3,16 @@ package set
 import (
 	"fmt"
 
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/api"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/command"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/reply"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/command"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/reply"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/service"
 )
 
 type Transport struct {
-	CommandSender   api.CommandSender
-	DataBlockSender api.DataBlockSender
-	ReplyReceiver   api.ReplyReceiver
+	CommandSender   service.CommandSender
+	DataBlockSender service.DataBlockSender
+	ReplyReceiver   service.ReplyReceiver
 }
 
 type Args struct {
@@ -41,7 +42,7 @@ func Call(t Transport, args Args) error {
 	}
 
 	if _, ok := someReply.(*reply.Stored); !ok {
-		return api.ErrUnexpectedReply
+		return core.ErrUnexpectedReply
 	}
 
 	return nil

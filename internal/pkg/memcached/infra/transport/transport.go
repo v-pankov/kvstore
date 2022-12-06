@@ -3,9 +3,9 @@ package transport
 import (
 	"fmt"
 
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/api"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/command"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/reply"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/command"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/reply"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/service"
 )
 
 type commandSender struct {
@@ -16,7 +16,7 @@ type commandSender struct {
 func NewCommandSender(
 	commandEncoder CommandEncoder,
 	commandWriter CommandWriter,
-) api.CommandSender {
+) service.CommandSender {
 	return commandSender{
 		commandEncoder: commandEncoder,
 		commandWriter:  commandWriter,
@@ -44,7 +44,7 @@ type replyReceiver struct {
 func NewReplyReceiver(
 	replyReader ReplyReader,
 	replyDecoder ReplyDecoder,
-) api.ReplyReceiver {
+) service.ReplyReceiver {
 	return replyReceiver{
 		replyReader:  replyReader,
 		replyDecoder: replyDecoder,
@@ -69,7 +69,7 @@ type dataBlockSender struct {
 	dataBlockWriter DataBlockWriter
 }
 
-func NewDataBlockSender(dataBlockWriter DataBlockWriter) api.DataBlockSender {
+func NewDataBlockSender(dataBlockWriter DataBlockWriter) service.DataBlockSender {
 	return dataBlockSender{
 		dataBlockWriter: dataBlockWriter,
 	}
@@ -86,7 +86,7 @@ type dataBlockReceiver struct {
 	dataBlockReader DataBlockReader
 }
 
-func NewDataBlockReceiver(dataBlockReader DataBlockReader) api.DataBlockReceiver {
+func NewDataBlockReceiver(dataBlockReader DataBlockReader) service.DataBlockReceiver {
 	return dataBlockReceiver{
 		dataBlockReader: dataBlockReader,
 	}

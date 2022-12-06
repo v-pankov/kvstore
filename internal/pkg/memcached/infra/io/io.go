@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/infrastructure/transport"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/infra/transport"
 )
 
 type commandWriter struct {

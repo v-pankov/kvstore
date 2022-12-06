@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/command"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/infrastructure/transport"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/reply"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/command"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/reply"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/infra/transport"
 )
 
 var (

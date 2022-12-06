@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/api"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/api/delete"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/api/gat"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/api/get"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/api/set"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/infrastructure/codec"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/infrastructure/io"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/infrastructure/transport"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/client/delete"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/client/gat"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/client/get"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/client/set"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/infra/codec"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/infra/io"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/infra/transport"
 )
 
 func OpenTCP(ip net.IP, port int) (Connection, error) {
@@ -139,7 +139,7 @@ func (c *tcpConn) Delete(key string) error {
 		},
 	)
 
-	if errors.Is(err, api.ErrNotFound) {
+	if errors.Is(err, core.ErrNotFound) {
 		return ErrNotFound
 	}
 

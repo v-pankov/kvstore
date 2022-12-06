@@ -3,14 +3,15 @@ package delete
 import (
 	"fmt"
 
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/api"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/command"
-	"github.com/vdrpkv/kvstore/internal/pkg/memcached/reply"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/command"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/reply"
+	"github.com/vdrpkv/kvstore/internal/pkg/memcached/core/service"
 )
 
 type Transport struct {
-	CommandSender api.CommandSender
-	ReplyReceiver api.ReplyReceiver
+	CommandSender service.CommandSender
+	ReplyReceiver service.ReplyReceiver
 }
 
 type Args struct {
@@ -30,11 +31,11 @@ func Call(t Transport, args Args) error {
 	}
 
 	if _, isNotFound := someReply.(*reply.NotFound); isNotFound {
-		return api.ErrNotFound
+		return core.ErrNotFound
 	}
 
 	if _, isDeleted := someReply.(*reply.Deleted); !isDeleted {
-		return api.ErrUnexpectedReply
+		return core.ErrUnexpectedReply
 	}
 
 	return nil
