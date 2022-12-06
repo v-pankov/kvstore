@@ -1,7 +1,6 @@
 package gat
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/vdrpkv/kvstore/internal/pkg/memcached/api"
@@ -19,12 +18,12 @@ type Args struct {
 	Keys    []string
 }
 
-func Call(ctx context.Context, t Transport, args Args) ([]api.Item, error) {
-	if err := t.CommandSender.SendCommand(ctx, &command.Gat{
+func Call(t Transport, args Args) ([]api.Item, error) {
+	if err := t.CommandSender.SendCommand(&command.Gat{
 		ExpTime: args.ExpTime,
 		Keys:    args.Keys,
 	}); err != nil {
 		return nil, fmt.Errorf("send command: %w", err)
 	}
-	return api.ReadItems(ctx, t.ReplyReceiver, t.DataBlockReceiver, len(args.Keys))
+	return api.ReadItems(t.ReplyReceiver, t.DataBlockReceiver, len(args.Keys))
 }

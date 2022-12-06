@@ -1,7 +1,6 @@
 package set
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/vdrpkv/kvstore/internal/pkg/memcached/api"
@@ -22,8 +21,8 @@ type Args struct {
 	Value   []byte
 }
 
-func Call(ctx context.Context, t Transport, args Args) error {
-	if err := t.CommandSender.SendCommand(ctx, &command.Set{
+func Call(t Transport, args Args) error {
+	if err := t.CommandSender.SendCommand(&command.Set{
 		Key:     args.Key,
 		Flags:   args.Flags,
 		ExpTime: args.ExpTime,
@@ -32,11 +31,11 @@ func Call(ctx context.Context, t Transport, args Args) error {
 		return fmt.Errorf("send command: %w", err)
 	}
 
-	if err := t.DataBlockSender.SendDataBlock(ctx, args.Value); err != nil {
+	if err := t.DataBlockSender.SendDataBlock(args.Value); err != nil {
 		return fmt.Errorf("send data block: %w", err)
 	}
 
-	someReply, err := t.ReplyReceiver.ReceiveReply(ctx)
+	someReply, err := t.ReplyReceiver.ReceiveReply()
 	if err != nil {
 		return fmt.Errorf("receive reply: %w", err)
 	}

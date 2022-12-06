@@ -1,7 +1,6 @@
 package memcached
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"net"
@@ -35,9 +34,7 @@ type tcpConn struct {
 }
 
 func (c *tcpConn) Set(key string, flags int16, exptime int, val string) error {
-	ctx := context.Background() // todo: remove
 	return set.Call(
-		ctx,
 		set.Transport{
 			CommandSender: transport.NewCommandSender(
 				codec.NewCommandEncoder(),
@@ -61,10 +58,7 @@ func (c *tcpConn) Set(key string, flags int16, exptime int, val string) error {
 }
 
 func (c *tcpConn) Gat(exptime int, keys ...string) ([]Item, error) {
-	ctx := context.Background() // todo: remove
-
 	apiItems, err := gat.Call(
-		ctx,
 		gat.Transport{
 			CommandSender: transport.NewCommandSender(
 				codec.NewCommandEncoder(),
@@ -97,10 +91,7 @@ func (c *tcpConn) Gat(exptime int, keys ...string) ([]Item, error) {
 }
 
 func (c *tcpConn) Get(keys ...string) ([]Item, error) {
-	ctx := context.Background() // todo: remove
-
 	apiItems, err := get.Call(
-		ctx,
 		get.Transport{
 			CommandSender: transport.NewCommandSender(
 				codec.NewCommandEncoder(),
@@ -132,10 +123,7 @@ func (c *tcpConn) Get(keys ...string) ([]Item, error) {
 }
 
 func (c *tcpConn) Delete(key string) error {
-	ctx := context.Background() // todo: remove
-
 	err := delete.Call(
-		ctx,
 		delete.Transport{
 			CommandSender: transport.NewCommandSender(
 				codec.NewCommandEncoder(),

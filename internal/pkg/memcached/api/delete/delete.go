@@ -1,7 +1,6 @@
 package delete
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/vdrpkv/kvstore/internal/pkg/memcached/api"
@@ -18,14 +17,14 @@ type Args struct {
 	Key string
 }
 
-func Call(ctx context.Context, t Transport, args Args) error {
-	if err := t.CommandSender.SendCommand(ctx, &command.Delete{
+func Call(t Transport, args Args) error {
+	if err := t.CommandSender.SendCommand(&command.Delete{
 		Key: args.Key,
 	}); err != nil {
 		return fmt.Errorf("send command: %w", err)
 	}
 
-	someReply, err := t.ReplyReceiver.ReceiveReply(ctx)
+	someReply, err := t.ReplyReceiver.ReceiveReply()
 	if err != nil {
 		return fmt.Errorf("receive reply: %w", err)
 	}

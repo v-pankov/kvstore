@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"errors"
 	"fmt"
 
@@ -18,19 +17,19 @@ var (
 
 type (
 	CommandSender interface {
-		SendCommand(context.Context, command.Command) error
+		SendCommand(command.Command) error
 	}
 
 	ReplyReceiver interface {
-		ReceiveReply(context.Context) (reply.Reply, error)
+		ReceiveReply() (reply.Reply, error)
 	}
 
 	DataBlockSender interface {
-		SendDataBlock(context.Context, []byte) error
+		SendDataBlock([]byte) error
 	}
 
 	DataBlockReceiver interface {
-		ReceiveDataBlock(context.Context, int) ([]byte, error)
+		ReceiveDataBlock(int) ([]byte, error)
 	}
 )
 
@@ -41,7 +40,6 @@ type Item struct {
 }
 
 func ReadItems(
-	ctx context.Context,
 	replyReceiver ReplyReceiver,
 	dataBlockReceiver DataBlockReceiver,
 	itemsCount int,
@@ -51,7 +49,7 @@ func ReadItems(
 ) {
 	items := make([]Item, 0, itemsCount+1) // one extra iteration to read END reply
 	for i := 0; i < itemsCount+1; i++ {
-		someReply, err := replyReceiver.ReceiveReply(ctx)
+		someReply, err := replyReceiver.ReceiveReply()
 		if err != nil {
 			return items, fmt.Errorf("receive reply: %w", err)
 		}
@@ -65,7 +63,7 @@ func ReadItems(
 			return items, ErrUnexpectedReply
 		}
 
-		dataBlock, err := dataBlockReceiver.ReceiveDataBlock(ctx, valueReply.Bytes)
+		dataBlock, err := dataBlockReceiver.ReceiveDataBlock(valueReply.Bytes)
 		if err != nil {
 			return items, fmt.Errorf("receive data block: %w", err)
 		}

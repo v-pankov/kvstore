@@ -1,7 +1,6 @@
 package transport
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/vdrpkv/kvstore/internal/pkg/memcached/api"
@@ -24,7 +23,7 @@ func NewCommandSender(
 	}
 }
 
-func (cs commandSender) SendCommand(ctx context.Context, cmd command.Command) error {
+func (cs commandSender) SendCommand(cmd command.Command) error {
 	commandBytes, err := cs.commandEncoder.EncodeCommand(cmd)
 	if err != nil {
 		return fmt.Errorf("encode command: %w", err)
@@ -52,7 +51,7 @@ func NewReplyReceiver(
 	}
 }
 
-func (rr replyReceiver) ReceiveReply(ctx context.Context) (reply.Reply, error) {
+func (rr replyReceiver) ReceiveReply() (reply.Reply, error) {
 	replyBytes, err := rr.replyReader.ReadReply()
 	if err != nil {
 		return nil, fmt.Errorf("read reply: %w", err)
@@ -76,7 +75,7 @@ func NewDataBlockSender(dataBlockWriter DataBlockWriter) api.DataBlockSender {
 	}
 }
 
-func (dbs dataBlockSender) SendDataBlock(ctx context.Context, dataBlock []byte) error {
+func (dbs dataBlockSender) SendDataBlock(dataBlock []byte) error {
 	if err := dbs.dataBlockWriter.WriteDataBlock(dataBlock); err != nil {
 		return fmt.Errorf("write data block: %w", err)
 	}
@@ -93,7 +92,7 @@ func NewDataBlockReceiver(dataBlockReader DataBlockReader) api.DataBlockReceiver
 	}
 }
 
-func (dbr dataBlockReceiver) ReceiveDataBlock(ctx context.Context, bytes int) ([]byte, error) {
+func (dbr dataBlockReceiver) ReceiveDataBlock(bytes int) ([]byte, error) {
 	dataBlock, err := dbr.dataBlockReader.ReadDataBlock(bytes)
 	if err != nil {
 		return nil, fmt.Errorf("read data block: %w", err)
