@@ -26,7 +26,6 @@ func NewCommandEncoder() transport.CommandEncoder {
 }
 
 func (ce commandEncoder) EncodeCommand(cmd command.Command) ([]byte, error) {
-
 	switch v := cmd.(type) {
 	case *command.Delete:
 		return []byte(
