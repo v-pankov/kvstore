@@ -6,7 +6,6 @@ type (
 		Flags   int16
 		ExpTime int
 		Bytes   int
-		NoReply bool
 	}
 
 	Get struct {
@@ -19,8 +18,7 @@ type (
 	}
 
 	Delete struct {
-		Key     string
-		NoReply bool
+		Key string
 	}
 )
 

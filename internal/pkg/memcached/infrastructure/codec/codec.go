@@ -26,18 +26,11 @@ func NewCommandEncoder() transport.CommandEncoder {
 }
 
 func (ce commandEncoder) EncodeCommand(cmd command.Command) ([]byte, error) {
-	norepSuffix := func(norep bool) string {
-		var norepStr string
-		if norep {
-			norepStr = " noreply"
-		}
-		return norepStr
-	}
 
 	switch v := cmd.(type) {
 	case *command.Delete:
 		return []byte(
-			"delete " + v.Key + norepSuffix(v.NoReply),
+			"delete " + v.Key,
 		), nil
 	case *command.Gat:
 		return []byte(fmt.Sprintf(
@@ -52,8 +45,8 @@ func (ce commandEncoder) EncodeCommand(cmd command.Command) ([]byte, error) {
 		)), nil
 	case *command.Set:
 		return []byte(fmt.Sprintf(
-			"set %s %d %d %d%s",
-			v.Key, v.Flags, v.ExpTime, v.Bytes, norepSuffix(v.NoReply),
+			"set %s %d %d %d",
+			v.Key, v.Flags, v.ExpTime, v.Bytes,
 		)), nil
 	default:
 		return nil, errUnknownCommand
