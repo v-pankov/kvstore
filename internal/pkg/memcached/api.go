@@ -18,8 +18,3 @@ type Client interface {
 	Get(key ...string) ([]Item, error)
 	Delete(key string) error
 }
-
-type Connection interface {
-	Client
-	Close() error
-}
