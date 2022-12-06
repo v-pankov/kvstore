@@ -77,7 +77,7 @@ func (c *tcpConn) Set(key string, flags int16, exptime int, val string) error {
 }
 
 func (c *tcpConn) Gat(exptime int, keys ...string) ([]Item, error) {
-	apiItems, err := gat.Call(
+	coreItems, err := gat.Call(
 		gat.Transport{
 			CommandSender:     c.commandSender,
 			ReplyReceiver:     c.replyReceiver,
@@ -88,21 +88,11 @@ func (c *tcpConn) Gat(exptime int, keys ...string) ([]Item, error) {
 			Keys:    keys,
 		},
 	)
-
-	items := make([]Item, len(apiItems))
-	for i := 0; i < len(items); i++ {
-		items[0] = Item{
-			Key:   apiItems[i].Key,
-			Flags: apiItems[i].Flags,
-			Value: string(apiItems[i].Value),
-		}
-	}
-
-	return items, err
+	return mapCoreItems(coreItems), err
 }
 
 func (c *tcpConn) Get(keys ...string) ([]Item, error) {
-	apiItems, err := get.Call(
+	coreItems, err := get.Call(
 		get.Transport{
 			CommandSender:     c.commandSender,
 			ReplyReceiver:     c.replyReceiver,
@@ -112,17 +102,7 @@ func (c *tcpConn) Get(keys ...string) ([]Item, error) {
 			Keys: keys,
 		},
 	)
-
-	items := make([]Item, len(apiItems))
-	for i := 0; i < len(items); i++ {
-		items[0] = Item{
-			Key:   apiItems[i].Key,
-			Flags: apiItems[i].Flags,
-			Value: string(apiItems[i].Value),
-		}
-	}
-
-	return items, err
+	return mapCoreItems(coreItems), err
 }
 
 func (c *tcpConn) Delete(key string) error {
