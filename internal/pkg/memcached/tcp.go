@@ -126,14 +126,3 @@ func (c *tcpConn) Delete(key string) error {
 func (c *tcpConn) Close() error {
 	return c.conn.Close()
 }
-
-type TCPConnFactory struct {
-	IP   net.IP
-	Port int
-}
-
-var _ ConnectionFactory = TCPConnFactory{}
-
-func (f TCPConnFactory) CreateConnection() (Connection, error) {
-	return OpenTCP(f.IP, f.Port)
-}
