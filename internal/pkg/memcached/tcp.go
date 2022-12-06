@@ -13,6 +13,8 @@ import (
 	"github.com/vdrpkv/kvstore/internal/pkg/memcached/infra/codec"
 	"github.com/vdrpkv/kvstore/internal/pkg/memcached/infra/io"
 	"github.com/vdrpkv/kvstore/internal/pkg/memcached/infra/transport"
+
+	coreTransport "github.com/vdrpkv/kvstore/internal/pkg/memcached/core/transport"
 )
 
 func OpenTCP(ip net.IP, port int) (Connection, error) {
@@ -24,29 +26,46 @@ func OpenTCP(ip net.IP, port int) (Connection, error) {
 		return nil, fmt.Errorf("dial tcp: %w", err)
 	}
 
+	var (
+		commandEncoder = codec.NewCommandEncoder()
+		replyDecoder   = codec.NewReplyDecoder()
+	)
+
 	return &tcpConn{
-		tcpConn: conn,
+		conn: conn,
+
+		commandSender: transport.NewCommandSender(
+			commandEncoder,
+			io.NewCommandWriter(conn),
+		),
+		replyReceiver: transport.NewReplyReceiver(
+			io.NewReplyReader(conn),
+			replyDecoder,
+		),
+		dataBlockSender: transport.NewDataBlockSender(
+			io.NewDataBlockWriter(conn),
+		),
+		dataBlockReceiver: transport.NewDataBlockReceiver(
+			io.NewDataBlockReader(conn),
+		),
 	}, nil
 }
 
 type tcpConn struct {
-	tcpConn *net.TCPConn
+	conn *net.TCPConn
+
+	commandSender     coreTransport.CommandSender
+	replyReceiver     coreTransport.ReplyReceiver
+	dataBlockSender   coreTransport.DataBlockSender
+	dataBlockReceiver coreTransport.DataBlockReceiver
 }
 
 func (c *tcpConn) Set(key string, flags int16, exptime int, val string) error {
 	return set.Call(
 		set.Transport{
-			CommandSender: transport.NewCommandSender(
-				codec.NewCommandEncoder(),
-				io.NewCommandWriter(c.tcpConn),
-			),
-			DataBlockSender: transport.NewDataBlockSender(
-				io.NewDataBlockWriter(c.tcpConn),
-			),
-			ReplyReceiver: transport.NewReplyReceiver(
-				io.NewReplyReader(c.tcpConn),
-				codec.NewReplyDecoder(),
-			),
+			CommandSender:   c.commandSender,
+			DataBlockSender: c.dataBlockSender,
+			ReplyReceiver:   c.replyReceiver,
 		},
 		set.Args{
 			Key:     key,
@@ -60,17 +79,9 @@ func (c *tcpConn) Set(key string, flags int16, exptime int, val string) error {
 func (c *tcpConn) Gat(exptime int, keys ...string) ([]Item, error) {
 	apiItems, err := gat.Call(
 		gat.Transport{
-			CommandSender: transport.NewCommandSender(
-				codec.NewCommandEncoder(),
-				io.NewCommandWriter(c.tcpConn),
-			),
-			ReplyReceiver: transport.NewReplyReceiver(
-				io.NewReplyReader(c.tcpConn),
-				codec.NewReplyDecoder(),
-			),
-			DataBlockReceiver: transport.NewDataBlockReceiver(
-				io.NewDataBlockReader(c.tcpConn),
-			),
+			CommandSender:     c.commandSender,
+			ReplyReceiver:     c.replyReceiver,
+			DataBlockReceiver: c.dataBlockReceiver,
 		},
 		gat.Args{
 			ExpTime: exptime,
@@ -93,17 +104,9 @@ func (c *tcpConn) Gat(exptime int, keys ...string) ([]Item, error) {
 func (c *tcpConn) Get(keys ...string) ([]Item, error) {
 	apiItems, err := get.Call(
 		get.Transport{
-			CommandSender: transport.NewCommandSender(
-				codec.NewCommandEncoder(),
-				io.NewCommandWriter(c.tcpConn),
-			),
-			ReplyReceiver: transport.NewReplyReceiver(
-				io.NewReplyReader(c.tcpConn),
-				codec.NewReplyDecoder(),
-			),
-			DataBlockReceiver: transport.NewDataBlockReceiver(
-				io.NewDataBlockReader(c.tcpConn),
-			),
+			CommandSender:     c.commandSender,
+			ReplyReceiver:     c.replyReceiver,
+			DataBlockReceiver: c.dataBlockReceiver,
 		},
 		get.Args{
 			Keys: keys,
@@ -125,14 +128,8 @@ func (c *tcpConn) Get(keys ...string) ([]Item, error) {
 func (c *tcpConn) Delete(key string) error {
 	err := delete.Call(
 		delete.Transport{
-			CommandSender: transport.NewCommandSender(
-				codec.NewCommandEncoder(),
-				io.NewCommandWriter(c.tcpConn),
-			),
-			ReplyReceiver: transport.NewReplyReceiver(
-				io.NewReplyReader(c.tcpConn),
-				codec.NewReplyDecoder(),
-			),
+			CommandSender: c.commandSender,
+			ReplyReceiver: c.replyReceiver,
 		},
 		delete.Args{
 			Key: key,
@@ -147,5 +144,5 @@ func (c *tcpConn) Delete(key string) error {
 }
 
 func (c *tcpConn) Close() error {
-	return c.tcpConn.Close()
+	return c.conn.Close()
 }
