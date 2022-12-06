@@ -1,6 +1,7 @@
 package inmem
 
 import (
+	"github.com/vdrpkv/kvstore/internal/app/infra/repository"
 	"github.com/vdrpkv/kvstore/internal/app/infra/repository/inmem/state"
 
 	deleteAdapter "github.com/vdrpkv/kvstore/internal/app/infra/repository/inmem/usecase/item/delete"
@@ -16,7 +17,7 @@ type repo struct {
 	state state.State
 }
 
-func New() *repo {
+func New() repository.Adapters {
 	return &repo{}
 }
 
