@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/vdrpkv/kvstore/internal/mocks"
+	"github.com/vdrpkv/kvstore/internal/core/entity/item/mocks"
 )
 
 func Test_Key_Validate(t *testing.T) {
@@ -92,7 +92,7 @@ func Test_Key_Validate(t *testing.T) {
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			keyValidatorMock := mocks.NewEntityItemKeyValidator(t)
+			keyValidatorMock := mocks.NewKeyValidator(t)
 
 			if tc.give.calls.keyMaxLen.Called {
 				keyValidatorMock.On("KeyMaxLen").Return(
