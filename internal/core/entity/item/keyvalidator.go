@@ -3,11 +3,12 @@ package item
 import (
 	"fmt"
 	"strings"
+	"unicode/utf8"
 )
 
 type KeyValidator interface {
 	KeyMaxLen() int
-	KeyForbiddenChars() string
+	ForbiddenRunes() string
 }
 
 func (k Key) Validate(v KeyValidator) error {
@@ -18,12 +19,12 @@ func (k Key) Validate(v KeyValidator) error {
 		}
 	}
 
-	if forbiddenCharIndex := strings.IndexAny(
-		string(k), v.KeyForbiddenChars(),
-	); forbiddenCharIndex >= 0 {
+	forbiddenCharIndex := strings.IndexAny(string(k), v.ForbiddenRunes())
+	if forbiddenCharIndex >= 0 {
+		forbiddenChar, _ := utf8.DecodeRuneInString(string(k)[forbiddenCharIndex:])
 		return ErrKeyForbiddenChar{
-			Char:     rune(k[forbiddenCharIndex]),
-			Position: forbiddenCharIndex,
+			Rune:  forbiddenChar,
+			Index: forbiddenCharIndex,
 		}
 	}
 
@@ -43,33 +44,33 @@ func (e ErrKeyLength) Error() string {
 }
 
 type ErrKeyForbiddenChar struct {
-	Char     rune
-	Position int
+	Rune  rune
+	Index int
 }
 
 func (e ErrKeyForbiddenChar) Error() string {
 	return fmt.Sprintf(
-		"key contains forbidden character [%s] at position [%d]",
-		string(e.Char), e.Position,
+		"key contains forbidden character [%s] at index [%d]",
+		string(e.Rune), e.Index,
 	)
 }
 
 type keyValidator struct {
-	keyMaxLen         int
-	keyForbiddenChars string
+	keyMaxLen      int
+	forbiddenRunes string
 }
 
 func (v keyValidator) KeyMaxLen() int {
 	return v.keyMaxLen
 }
 
-func (v keyValidator) KeyForbiddenChars() string {
-	return v.keyForbiddenChars
+func (v keyValidator) ForbiddenRunes() string {
+	return v.forbiddenRunes
 }
 
-func NewKeyValidator(keyMaxLen int, forbiddenChars string) KeyValidator {
+func NewKeyValidator(keyMaxLen int, forbiddenRunes string) KeyValidator {
 	return keyValidator{
-		keyMaxLen:         keyMaxLen,
-		keyForbiddenChars: forbiddenChars,
+		keyMaxLen:      keyMaxLen,
+		forbiddenRunes: forbiddenRunes,
 	}
 }
