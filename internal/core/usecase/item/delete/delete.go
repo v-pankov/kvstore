@@ -7,10 +7,11 @@ import (
 	"github.com/vdrpkv/kvstore/internal/core/usecase"
 
 	itemEntity "github.com/vdrpkv/kvstore/internal/core/entity/item"
-	itemUsecase "github.com/vdrpkv/kvstore/internal/core/usecase/item"
 )
 
-type Request itemUsecase.BasicRequest
+type Request struct {
+	Key string
+}
 
 func (r Request) ItemKey() itemEntity.Key {
 	return itemEntity.Key(r.Key)

@@ -51,15 +51,3 @@ func NewKeyValidationProcessor[
 type KeyValidatingRequest interface {
 	ItemKey() item.Key
 }
-
-// BasicRequest implements KeyValidatingRequest and should be used in most
-// item related use case requests (because most of them contains item key).
-type BasicRequest struct {
-	Key []byte
-}
-
-var _ KeyValidatingRequest = BasicRequest{}
-
-func (r BasicRequest) ItemKey() item.Key {
-	return item.Key(string(r.Key))
-}
