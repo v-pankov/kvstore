@@ -17,3 +17,12 @@ devenv-up-d:
 
 devenv-down:
 	${DEVENV_DOCKERCOMPOSE} ${__DEVENV_DOCKERCOMPOSE_FILE} down
+
+run-server:
+	go run ./cmd/grpc/server/server.go
+
+run-client:
+	go run ./cmd/grpc/client/client.go
+
+run-memcached:
+	go run ./cmd/memcached/memcached.go
