@@ -9,7 +9,7 @@ service KVStore {
 }
 
 message DeleteRequest {
-    bytes key = 1;
+    string key = 1;
 }
 
 message DeleteReply {
@@ -18,7 +18,7 @@ message DeleteReply {
 }
 
 message GetRequest {
-    bytes key = 1;
+    string key = 1;
 }
 
 message GetReply {
@@ -28,8 +28,8 @@ message GetReply {
 }
 
 message SetRequest {
-    bytes key = 1; 
-    bytes val = 2;
+    string key = 1; 
+    bytes  val = 2;
 }
 
 message SetReply {

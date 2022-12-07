@@ -31,8 +31,8 @@ func doMain(opts ...grpc.DialOption) {
 
 	client := apiGrpc.NewKVStoreClient(conn)
 
-	key := []byte(strconv.FormatInt(int64(time.Now().Minute()), 10))
-	//key := []byte("   \t\r\n ")
+	key := strconv.FormatInt(int64(time.Now().Minute()), 10)
+	//key := "   \t\r\n "
 	val := []byte(strconv.FormatInt(int64(time.Now().Second()), 10))
 	ctx := context.Background()
 
