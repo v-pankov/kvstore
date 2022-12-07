@@ -23,7 +23,7 @@ func (a Adapter) FindItemByKey(ctx context.Context, key item.Key) (*item.Entity,
 
 func (a Adapter) findItemByKey(ctx context.Context, key item.Key) (*item.Entity, error) {
 	for _, item := range a.Items {
-		if !key.EqualsTo(item.Key) {
+		if key != item.Key {
 			continue
 		}
 		return item, nil

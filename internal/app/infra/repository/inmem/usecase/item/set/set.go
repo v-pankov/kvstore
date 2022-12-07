@@ -23,7 +23,7 @@ func (a Adapter) CreateOrUpdateItem(ctx context.Context, key item.Key, val item.
 
 func (a Adapter) createOrUpdateItem(ctx context.Context, key item.Key, val item.Val) error {
 	for _, item := range a.Items {
-		if !key.EqualsTo(item.Key) {
+		if key != item.Key {
 			continue
 		}
 

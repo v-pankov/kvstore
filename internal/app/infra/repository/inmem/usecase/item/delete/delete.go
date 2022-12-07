@@ -23,7 +23,7 @@ func (a Adapter) DeleteItemByKey(ctx context.Context, key item.Key) error {
 
 func (a Adapter) deleteItemByKey(ctx context.Context, key item.Key) error {
 	for _, item := range a.Items {
-		if !key.EqualsTo(item.Key) {
+		if key != item.Key {
 			continue
 		}
 

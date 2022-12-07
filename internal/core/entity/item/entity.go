@@ -19,10 +19,6 @@ type (
 	Val []byte
 )
 
-func (k Key) EqualsTo(thatKey Key) bool {
-	return k == thatKey
-}
-
 func (k Key) Validate(v KeyValidator) error {
 	if len(k) > v.KeyMaxLen() {
 		return ErrKeyLength{
