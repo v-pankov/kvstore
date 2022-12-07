@@ -2,6 +2,7 @@ package delete
 
 import (
 	"context"
+	"time"
 
 	"github.com/vdrpkv/kvstore/internal/app/infra/repository/inmem/state"
 	"github.com/vdrpkv/kvstore/internal/core/entity/item"
@@ -28,7 +29,7 @@ func (a Adapter) deleteItemByKey(ctx context.Context, key item.Key) error {
 		}
 
 		if !item.IsDeleted() {
-			item.MarkDeleted()
+			item.MetaData.DeletedAt = time.Now()
 		}
 	}
 

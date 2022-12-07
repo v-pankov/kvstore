@@ -2,8 +2,10 @@ package set
 
 import (
 	"context"
+	"time"
 
 	"github.com/vdrpkv/kvstore/internal/app/infra/repository/inmem/state"
+	"github.com/vdrpkv/kvstore/internal/core/entity"
 	"github.com/vdrpkv/kvstore/internal/core/entity/item"
 	"github.com/vdrpkv/kvstore/internal/core/usecase/item/set"
 )
@@ -28,15 +30,17 @@ func (a Adapter) createOrUpdateItem(ctx context.Context, key item.Key, val item.
 		}
 
 		item.Val = val
-		item.MarkUpdated()
+		item.UpdatedAt = time.Now()
 		return nil
 	}
 
 	newItem := &item.Entity{
+		MetaData: entity.MetaData{
+			CreatedAt: time.Now(),
+		},
 		Key: key,
 		Val: val,
 	}
-	newItem.MarkCreated()
 
 	a.Items = append(a.Items, newItem)
 
