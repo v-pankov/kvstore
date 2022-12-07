@@ -14,7 +14,7 @@ import (
 type Request itemUsecase.BasicRequest
 
 func (r Request) ItemKey() itemEntity.Key {
-	return r.Key
+	return itemEntity.Key(r.Key)
 }
 
 type Response struct {
@@ -29,7 +29,7 @@ type Processor struct {
 }
 
 func (p Processor) Process(ctx context.Context, req *Request) (*Response, error) {
-	item, err := p.Gateways.Repository.FindItemByKey(ctx, req.Key)
+	item, err := p.Gateways.Repository.FindItemByKey(ctx, itemEntity.Key(req.Key))
 	if err != nil {
 		return nil, fmt.Errorf("find item by key: %w", err)
 	}

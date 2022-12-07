@@ -10,12 +10,12 @@ import (
 )
 
 type Request struct {
-	Key []byte
+	Key string
 	Val []byte
 }
 
 func (r Request) ItemKey() itemEntity.Key {
-	return r.Key
+	return itemEntity.Key(r.Key)
 }
 
 type Response struct {
@@ -26,7 +26,7 @@ type Processor struct {
 }
 
 func (p Processor) Process(ctx context.Context, req *Request) (*Response, error) {
-	if err := p.Gateways.Repository.CreateOrUpdateItem(ctx, req.Key, req.Val); err != nil {
+	if err := p.Gateways.Repository.CreateOrUpdateItem(ctx, itemEntity.Key(req.Key), req.Val); err != nil {
 		return nil, fmt.Errorf("create or update item: %w", err)
 	}
 

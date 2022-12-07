@@ -13,7 +13,7 @@ import (
 type Request itemUsecase.BasicRequest
 
 func (r Request) ItemKey() itemEntity.Key {
-	return r.Key
+	return itemEntity.Key(r.Key)
 }
 
 type Response struct {
@@ -24,7 +24,7 @@ type Processor struct {
 }
 
 func (p Processor) Process(ctx context.Context, req *Request) (*Response, error) {
-	if err := p.Gateways.Repository.DeleteItemByKey(ctx, req.Key); err != nil {
+	if err := p.Gateways.Repository.DeleteItemByKey(ctx, itemEntity.Key(req.Key)); err != nil {
 		return nil, fmt.Errorf("delete item by key: %w", err)
 	}
 	return &Response{}, nil

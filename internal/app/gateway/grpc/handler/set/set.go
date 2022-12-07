@@ -18,7 +18,7 @@ var _ server.Handler[grpc.SetRequest, grpc.SetReply] = Handler{}
 
 func (h Handler) Handle(ctx context.Context, req *grpc.SetRequest) (*grpc.SetReply, error) {
 	_, err := h.Processor.Process(ctx, &set.Request{
-		Key: req.Key,
+		Key: string(req.Key),
 		Val: req.Val,
 	})
 

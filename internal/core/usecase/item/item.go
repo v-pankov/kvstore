@@ -61,5 +61,5 @@ type BasicRequest struct {
 var _ KeyValidatingRequest = BasicRequest{}
 
 func (r BasicRequest) ItemKey() item.Key {
-	return r.Key
+	return item.Key(string(r.Key))
 }

@@ -1,8 +1,8 @@
 package item
 
 import (
-	"bytes"
 	"fmt"
+	"strings"
 
 	"github.com/vdrpkv/kvstore/internal/core/entity"
 )
@@ -14,12 +14,12 @@ type (
 		Val Val
 	}
 
-	Key []byte
+	Key string
 	Val []byte
 )
 
 func (k Key) EqualsTo(thatKey Key) bool {
-	return bytes.Equal(k, thatKey)
+	return k == thatKey
 }
 
 type ErrKeyLength struct {
@@ -53,8 +53,8 @@ func (k Key) Validate(v KeyValidator) error {
 		}
 	}
 
-	if forbiddenCharIndex := bytes.IndexAny(
-		k, v.KeyForbiddenChars(),
+	if forbiddenCharIndex := strings.IndexAny(
+		string(k), v.KeyForbiddenChars(),
 	); forbiddenCharIndex >= 0 {
 		return ErrKeyForbiddenChar{
 			Char:     rune(k[forbiddenCharIndex]),
