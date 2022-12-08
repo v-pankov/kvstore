@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	apiGrpc "github.com/vdrpkv/kvstore/generated/api/grpc"
 )
@@ -37,14 +37,14 @@ func doMain(opts ...grpc.DialOption) {
 	app := cli.App{
 		Name: "client",
 
-		Commands: []cli.Command{
+		Commands: []*cli.Command{
 			{
 				Name:      "set",
 				ArgsUsage: "key val",
 				Action: func(c *cli.Context) error {
 					args := c.Args()
-					key := args[0]
-					val := args[1]
+					key := args.Get(0)
+					val := args.Get(1)
 
 					rsp, err := client.Set(
 						ctx, &apiGrpc.SetRequest{
@@ -61,7 +61,7 @@ func doMain(opts ...grpc.DialOption) {
 				ArgsUsage: "key",
 				Action: func(c *cli.Context) error {
 					args := c.Args()
-					key := args[0]
+					key := args.Get(0)
 					rsp, err := client.Get(
 						ctx, &apiGrpc.GetRequest{
 							Key: key,
@@ -76,7 +76,7 @@ func doMain(opts ...grpc.DialOption) {
 				ArgsUsage: "key",
 				Action: func(c *cli.Context) error {
 					args := c.Args()
-					key := args[0]
+					key := args.Get(0)
 					rsp, err := client.Delete(
 						ctx, &apiGrpc.DeleteRequest{
 							Key: key,
