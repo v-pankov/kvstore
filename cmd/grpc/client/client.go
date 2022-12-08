@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/urfave/cli/v2"
+	"github.com/spf13/cobra"
 
 	apiGrpc "github.com/vdrpkv/kvstore/generated/api/grpc"
 )
@@ -34,59 +33,80 @@ func doMain(opts ...grpc.DialOption) {
 
 	client := apiGrpc.NewKVStoreClient(conn)
 
-	app := cli.App{
-		Name: "client",
-
-		Commands: []*cli.Command{
-			{
-				Name:      "set",
-				ArgsUsage: "key val",
-				Action: func(c *cli.Context) error {
-					args := c.Args()
-					key := args.Get(0)
-					val := args.Get(1)
-
-					rsp, err := client.Set(
-						ctx, &apiGrpc.SetRequest{
-							Key: key,
-							Val: []byte(val),
-						},
-					)
-					fmt.Println(rsp, err)
-					return err
-				},
-			},
-			{
-				Name:      "get",
-				ArgsUsage: "key",
-				Action: func(c *cli.Context) error {
-					args := c.Args()
-					key := args.Get(0)
-					rsp, err := client.Get(
-						ctx, &apiGrpc.GetRequest{
-							Key: key,
-						},
-					)
-					fmt.Println(rsp, err)
-					return err
-				},
-			},
-			{
-				Name:      "delete",
-				ArgsUsage: "key",
-				Action: func(c *cli.Context) error {
-					args := c.Args()
-					key := args.Get(0)
-					rsp, err := client.Delete(
-						ctx, &apiGrpc.DeleteRequest{
-							Key: key,
-						},
-					)
-					fmt.Println(rsp, err)
-					return err
-				},
-			},
-		},
+	var defMsg = func(msg string) string {
+		if msg == "" {
+			return "OK"
+		}
+		return msg
 	}
-	app.Run(os.Args)
+
+	var (
+		rootCmd = &cobra.Command{
+			Short: "client",
+			Long:  "kvstore client",
+		}
+
+		setCmd = &cobra.Command{
+			Short: "set",
+			Use:   "set key val",
+			Args:  cobra.ExactArgs(2),
+			RunE: func(cmd *cobra.Command, args []string) error {
+				key := args[0]
+				val := args[1]
+
+				rsp, err := client.Set(
+					ctx, &apiGrpc.SetRequest{
+						Key: key,
+						Val: []byte(val),
+					},
+				)
+
+				fmt.Printf("STATUS: %d, MESSAGE: %s\n", rsp.Status, defMsg(rsp.Message))
+				return err
+			},
+		}
+
+		getCmd = &cobra.Command{
+			Short: "get",
+			Use:   "get key",
+			Args:  cobra.ExactArgs(1),
+			RunE: func(cmd *cobra.Command, args []string) error {
+				key := args[0]
+				rsp, err := client.Get(
+					ctx, &apiGrpc.GetRequest{
+						Key: key,
+					},
+				)
+
+				fmt.Printf("STATUS: %d, MESSAGE: %s, VALUE: %s\n", rsp.Status, defMsg(rsp.Message), string(rsp.Val))
+				return err
+			},
+		}
+
+		deleteCmd = &cobra.Command{
+			Short: "delete",
+			Use:   "delete key",
+			Args:  cobra.ExactArgs(1),
+			RunE: func(cmd *cobra.Command, args []string) error {
+				key := args[0]
+				rsp, err := client.Delete(
+					ctx, &apiGrpc.DeleteRequest{
+						Key: key,
+					},
+				)
+
+				fmt.Printf("STATUS: %d, MESSAGE: %s\n", rsp.Status, defMsg(rsp.Message))
+				return err
+			},
+		}
+	)
+
+	rootCmd.AddCommand(setCmd)
+	rootCmd.AddCommand(getCmd)
+	rootCmd.AddCommand(deleteCmd)
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Printf("ERROR: %v\n", err)
+		return
+	}
+	fmt.Println("DONE")
 }

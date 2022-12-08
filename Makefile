@@ -1,3 +1,5 @@
+all: prepare clean generate build
+
 generate:
 	protoc --proto_path=api/grpc schema.proto --go_out=. --go-grpc_out=.
 
@@ -18,11 +20,12 @@ devenv-up-d:
 devenv-down:
 	${DEVENV_DOCKERCOMPOSE} ${__DEVENV_DOCKERCOMPOSE_FILE} down
 
-run-server:
-	go run ./cmd/grpc/server/server.go
+prepare:
+	mkdir -p ./build
 
-run-client:
-	go run ./cmd/grpc/client/client.go
+clean:
+	rm -rf ./build
 
-run-memcached:
-	go run ./cmd/memcached/memcached.go
+build:
+	go build -o build/kvstore-client ./cmd/grpc/client
+	go build -o build/kvstore-server ./cmd/grpc/server
