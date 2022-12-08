@@ -44,6 +44,9 @@ func doMain(opts ...grpc.DialOption) {
 		rootCmd = &cobra.Command{
 			Short: "client",
 			Long:  "kvstore client",
+			CompletionOptions: cobra.CompletionOptions{
+				DisableDefaultCmd: true,
+			},
 		}
 
 		setCmd = &cobra.Command{
